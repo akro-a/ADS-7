@@ -4,7 +4,6 @@
 
 #include <cstddef>  // std::size_t
 
-// Решение задачи о «поезде с лампочками».
 class Train {
  public:
   Train() : first_(nullptr), op_count_(0) {}
@@ -19,13 +18,12 @@ class Train {
     delete first_;
   }
 
-  // === интерфейс, который ожидает main.cpp ===
+  // интерфейс, который вызывает main.cpp
   void addCar(bool light_on) { AddCar(light_on); }
   int  getLength()           { return static_cast<int>(GetLength()); }
   int  getOpCount() const    { return static_cast<int>(op_count_);   }
 
  private:
-  // --- внутренняя реализация ---
   struct Car {
     bool light;
     Car* next;
@@ -51,19 +49,19 @@ class Train {
 
   std::size_t GetLength() {
     if (!first_) return 0;
-    op_count_ = 0;
+    op_count_ = 1;            // <‑‑ учитываем «стартовый вход» в первый вагон
 
-    // Шаг 1: гасим все лампочки.
+    // 1. погасить все лампочки
     for (Car* cur = first_;; cur = cur->next) {
       ++op_count_;
       cur->light = false;
       if (cur->next == first_) break;
     }
 
-    // Шаг 2: отмечаем исходный вагон.
+    // 2. отметка
     first_->light = true;
 
-    // Шаг 3: считаем вагоны до первой зажжённой лампы.
+    // 3. обход до своей метки
     std::size_t len = 1;
     for (Car* cur = first_->next; !cur->light; cur = cur->next) {
       ++op_count_;
