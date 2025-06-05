@@ -1,4 +1,4 @@
-// Copyright 2025 ADS-7.2
+// Copyright 2021 NNTU-CS
 
 #include <chrono>
 #include <iostream>
