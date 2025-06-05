@@ -1,56 +1,53 @@
-// Copyright 2021 NNTU-CS
+// src/train.cpp
 
 #include "train.h"
-#include <cstddef>
+#include <cstddef>  // для nullptr
 
-namespace ads7 {
+// Конструктор: создаём «пустой» поезд
+Train::Train() : countOp(0), first(nullptr) {}
 
-Train::Train() : first_(nullptr), count_op_(0) {}
-
-Train::~Train() {
-  if (first_ != nullptr) {
-    Car* current = first_->next;
-    while (current != first_) {
-      Car* next = current->next;
-      delete current;
-      current = next;
-    }
-    delete first_;
-    first_ = nullptr;
-  }
-}
-
+// Метод addCar(bool): добавляет один вагон в кольцевой список.
+// Если first == nullptr, новый вагон сам на себя указывает.
+// Иначе вставляем newCar сразу перед first (в конец цикла).
 void Train::addCar(bool light) {
-  Car* new_car = new Car(light);
-  if (first_ == nullptr) {
-    first_ = new_car;
+  // Выделяем узел «Car» со значением light
+  Car* newCar = new Car;
+  newCar->light = light;
+  newCar->next = newCar;
+  newCar->prev = newCar;
+
+  if (first == nullptr) {
+    first = newCar;
   } else {
-    Car* last = first_->prev;
-    last->next = new_car;
-    new_car->prev = last;
-    new_car->next = first_;
-    first_->prev = new_car;
+    // Получим последний вагон (тот, чей next указывает на first)
+    Car* last = first->prev;
+    last->next = newCar;
+    newCar->prev = last;
+    newCar->next = first;
+    first->prev = newCar;
   }
 }
 
+// Метод getLength(): обходит поезда, считая вагоны.
+// Каждый раз, когда делаем current = current->next, увеличиваем countOp.
+// Возвращаем общее число вагонов. Если поезд пуст, возвращаем 0.
 int Train::getLength() {
-  count_op_ = 0;
-  if (first_ == nullptr) {
+  countOp = 0;
+  if (first == nullptr) {
     return 0;
   }
-
-  int length = 1;
-  Car* current = first_->next;
-  while (current != first_) {
-    ++length;
-    ++count_op_;
+  // Считаем хотя бы один вагон (first сам по себе)
+  int len = 1;
+  Car* current = first->next;
+  while (current != first) {
+    ++len;
+    ++countOp;        // учёт шага по next
     current = current->next;
   }
-  return length;
+  return len;
 }
 
-int Train::getOpCount() const {
-  return count_op_;
-}
-
+// Метод getOpCount(): возвращает число переходов, накопленных выше.
+int Train::getOpCount() {
+  return countOp;
 }
