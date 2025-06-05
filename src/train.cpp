@@ -1,4 +1,4 @@
-// src/train.cpp
+//Copyriht 2022 NNTU-CS
 
 #include "train.h"
 #include <cstddef>  // для nullptr
