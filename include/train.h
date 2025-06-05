@@ -1,39 +1,22 @@
-// Copyright 2025
+// Copyright 2022 NNTU-CS
 #ifndef INCLUDE_TRAIN_H_
 #define INCLUDE_TRAIN_H_
-
-#include <cstddef>
 
 class Train {
  private:
   struct Car {
-    bool light;
+    bool light;            // состояние лампочки
     Car* next;
     Car* prev;
-    // Конструктор “по-умолчанию” для нового вагона:
-    explicit Car(bool light_init) : light(light_init), next(this), prev(this) {}
   };
-
-  Car* first_;    // “Вход” в замкнутый список вагонов (первый вагон)
-  int count_op_;  // Сколько “шагов” (переходов по next) сделал getLength()
+  int countOp;            // счётчик шагов (переходов по next)
+  Car* first;             // указатель на первый вагон в цикле
 
  public:
-  // Конструктор/деструктор:
   Train();
-  ~Train();
-
-  // Добавить один вагон в поезд (lamp = начальное состояние лампочки):
-  void addCar(bool lamp);
-
-  // Обойти все вагоны по кругу, посчитать их число.
-  // При каждом переходе current = current->next
-  // увеличиваем count_op_. Возвращает общее число вагонов.
-  int getLength();
-
-  // После вызова getLength() возвращает, сколько раз мы переходили по next;
-  // если getLength() не вызывался, возвращает 0.
-  int getOpCount() const;
+  void addCar(bool light);   // добавить вагон с начальным состоянием лампочки
+  int getLength();           // вычислить длину поезда
+  int getOpCount();          // вернуть число переходов (из getLength)
 };
 
 #endif  // INCLUDE_TRAIN_H_
-
