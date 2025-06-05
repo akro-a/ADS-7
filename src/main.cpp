@@ -1,64 +1,67 @@
-// Copyright 2021 NNTU-CS
+// src/main.cpp
 
-#include <chrono>
-#include <iostream>
-#include <random>
-#include <vector>
 #include "train.h"
+#include <iostream>
+#include <chrono>
+#include <random>
+
+// Мы измеряем для n = 100, 200, …, 2000:
+//   • getOpCount() – число «шагов» (переходов по next) при подсчёте длины.
+//   • «настенные» микросекунды, потраченные на getLength().
+// Для каждого n три сценария: “off”, “on”, “rand”.
+// Выводим CSV: n,scenario,ops,time_micro
 
 int main() {
+  std::mt19937 generator(2025);       // генератор с фиксированным сидом
+  std::uniform_int_distribution<int> dist(0, 1);
 
+  const int MAX_N = 2000;
+  const int STEP = 100;
 
-  const int max_n = 2000;
-  const int step = 100;
-  std::mt19937 rng(42);
+  std::cout << "n,scenario,ops,time_micro\n";
 
-  std::cout << "n,scenario,op_count,time_micro\n";
-  for (int n = step; n <= max_n; n += step) {
+  for (int n = STEP; n <= MAX_N; n += STEP) {
+    // 1) Сценарий «off»: все лампочки выключены
     {
-      ads7::Train train;
+      Train train;
       for (int i = 0; i < n; ++i) {
         train.addCar(false);
       }
-      auto start = std::chrono::high_resolution_clock::now();
-      int len = train.getLength();
-      auto end = std::chrono::high_resolution_clock::now();
-      long long duration =
-          std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-              .count();
-      std::cout << n << ",off," << train.getOpCount() << "," << duration
-                << "\n";
+      auto t_start = std::chrono::steady_clock::now();
+      int length = train.getLength();
+      auto t_end = std::chrono::steady_clock::now();
+      auto elapsed = 
+        std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start).count();
+      std::cout << n << ",off," << train.getOpCount() << "," << elapsed << "\n";
     }
 
+    // 2) Сценарий «on»: все лампочки включены
     {
-      ads7::Train train;
+      Train train;
       for (int i = 0; i < n; ++i) {
         train.addCar(true);
       }
-      auto start = std::chrono::high_resolution_clock::now();
-      int len = train.getLength();
-      auto end = std::chrono::high_resolution_clock::now();
-      long long duration =
-          std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-              .count();
-      std::cout << n << ",on," << train.getOpCount() << "," << duration
-                << "\n";
+      auto t_start = std::chrono::steady_clock::now();
+      int length = train.getLength();
+      auto t_end = std::chrono::steady_clock::now();
+      auto elapsed = 
+        std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start).count();
+      std::cout << n << ",on," << train.getOpCount() << "," << elapsed << "\n";
     }
 
+    // 3) Сценарий «rand»: случайное распределение лампочек
     {
-      ads7::Train train;
+      Train train;
       for (int i = 0; i < n; ++i) {
-        bool light = (rng() & 1);
-        train.addCar(light);
+        bool state = (dist(generator) == 1);
+        train.addCar(state);
       }
-      auto start = std::chrono::high_resolution_clock::now();
-      int len = train.getLength();
-      auto end = std::chrono::high_resolution_clock::now();
-      long long duration =
-          std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-              .count();
-      std::cout << n << ",rand," << train.getOpCount() << "," << duration
-                << "\n";
+      auto t_start = std::chrono::steady_clock::now();
+      int length = train.getLength();
+      auto t_end = std::chrono::steady_clock::now();
+      auto elapsed = 
+        std::chrono::duration_cast<std::chrono::microseconds>(t_end - t_start).count();
+      std::cout << n << ",rand," << train.getOpCount() << "," << elapsed << "\n";
     }
   }
 
