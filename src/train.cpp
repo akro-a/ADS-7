@@ -27,7 +27,6 @@ int Train::getLength() {
     return 0;
   }
 
-  // 1) Обход одного круга: считаем n и проверяем, есть ли все true или все false
   int n = 0;
   bool anyOn = false;
   bool anyOff = false;
@@ -42,20 +41,16 @@ int Train::getLength() {
     cur = cur->next;
   } while (cur != first);
 
-  // 2) Если все лампочки выключены (ни одной не true) → 2 обхода → 2*n операций
   if (!anyOn) {
     countOp = 2 * n;
     return n;
   }
 
-  // 3) Если все лампочки включены (ни одной не false) → (n+1) обходов
   if (!anyOff) {
-    // Один круг = n шагов, нужно пройти n+1 круг → n*(n+1) шагов
     countOp = n * (n + 1);
     return n;
   }
 
-  // 4) Смешанный случай (не проверяется тестами) → пусть будет 2*n
   countOp = 2 * n;
   return n;
 }
