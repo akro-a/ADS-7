@@ -1,53 +1,38 @@
-//Copyriht 2022 NNTU-CS
-
+// Copyright 2021 NNTU-CS
 #include "train.h"
-#include <cstddef>  // для nullptr
 
-// Конструктор: создаём «пустой» поезд
 Train::Train() : countOp(0), first(nullptr) {}
 
-// Метод addCar(bool): добавляет один вагон в кольцевой список.
-// Если first == nullptr, новый вагон сам на себя указывает.
-// Иначе вставляем newCar сразу перед first (в конец цикла).
 void Train::addCar(bool light) {
-  // Выделяем узел «Car» со значением light
-  Car* newCar = new Car;
-  newCar->light = light;
-  newCar->next = newCar;
-  newCar->prev = newCar;
-
+  Car* new_car = new Car;
+  new_car->light = light;
   if (first == nullptr) {
-    first = newCar;
+    new_car->next = new_car;
+    new_car->prev = new_car;
+    first = new_car;
   } else {
-    // Получим последний вагон (тот, чей next указывает на first)
-    Car* last = first->prev;
-    last->next = newCar;
-    newCar->prev = last;
-    newCar->next = first;
-    first->prev = newCar;
+    Car* tail = first->prev;
+    tail->next = new_car;
+    new_car->prev = tail;
+    new_car->next = first;
+    first->prev = new_car;
   }
 }
 
-// Метод getLength(): обходит поезда, считая вагоны.
-// Каждый раз, когда делаем current = current->next, увеличиваем countOp.
-// Возвращаем общее число вагонов. Если поезд пуст, возвращаем 0.
 int Train::getLength() {
-  countOp = 0;
   if (first == nullptr) {
+    countOp = 0;
     return 0;
   }
-  // Считаем хотя бы один вагон (first сам по себе)
-  int len = 1;
-  Car* current = first->next;
-  while (current != first) {
-    ++len;
-    ++countOp;        // учёт шага по next
+  countOp = 0;
+  Car* current = first;
+  do {
     current = current->next;
-  }
-  return len;
+    countOp++;
+  } while (current != first);
+  return countOp;
 }
 
-// Метод getOpCount(): возвращает число переходов, накопленных выше.
 int Train::getOpCount() {
   return countOp;
 }
