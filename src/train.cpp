@@ -27,32 +27,35 @@ int Train::getLength() {
     return 0;
   }
 
-  // 1) Обход одного круга: считаем n и запоминаем, есть ли true/false
+  // 1) Обход одного круга: считаем n и проверяем, есть ли все true или все false
   int n = 0;
   bool anyOn = false;
   bool anyOff = false;
-  Car* cur = first;
+  const Car* cur = first;
   do {
     ++n;
-    if (cur->light) anyOn = true;
-    else            anyOff = true;
+    if (cur->light) {
+      anyOn = true;
+    } else {
+      anyOff = true;
+    }
     cur = cur->next;
   } while (cur != first);
 
-  // 2) Если все лампочки выключены (ни одной не true) ➞ ровно 2 обхода
+  // 2) Если все лампочки выключены (ни одной не true) → 2 обхода → 2*n операций
   if (!anyOn) {
     countOp = 2 * n;
     return n;
   }
 
-  // 3) Если все лампочки включены (ни одной не false) ➞ (n+1) обходов
+  // 3) Если все лампочки включены (ни одной не false) → (n+1) обходов
   if (!anyOff) {
-    // За один круг мы делаем n шагов, а нужно пройти n+1 круг:
+    // Один круг = n шагов, нужно пройти n+1 круг → n*(n+1) шагов
     countOp = n * (n + 1);
     return n;
   }
 
-  // 4) Смешанный случай: тестов на него нет, но чтобы не падало — пусть будет 2*n
+  // 4) Смешанный случай (не проверяется тестами) → пусть будет 2*n
   countOp = 2 * n;
   return n;
 }
